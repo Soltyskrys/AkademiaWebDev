@@ -1,0 +1,38 @@
+﻿@model IEnumerable<webdev.Models.LinkDataViewModel>
+@using webdev.Models;
+<html>
+<head>
+
+</head>
+<body>
+    <h1>Lista linków</h1>
+    @using (Html.BeginForm("Add", "Links", FormMethod.Post))
+    {
+        <input type="text" name="@nameof(AddLinkInput.Link)" />
+        <button type="submit">Dodaj</button>
+    }
+    <table>
+        <tr>
+            <th>Usuń</th>
+            <th>Link</th>
+            <th>Hash</th>
+        </tr>
+
+        @foreach (var link in Model)
+        {
+            <tr>
+                @using (Html.BeginForm("Remove", "Links", FormMethod.Post))
+                {
+                    <td>
+                        <input type="hidden" name="@nameof(RemoveLinkInput.Hash)" value="@link.Hash" />
+                        <button type="submit">Usuń</button>
+                    </td>
+                }
+                <td>@link.Link</td>
+                <td><a href="/@link.Hash">@link.Hash</a></td>
+            </tr>
+        }
+
+    </table>
+</body>
+</html>
