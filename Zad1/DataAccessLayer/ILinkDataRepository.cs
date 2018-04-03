@@ -8,9 +8,11 @@ namespace webdev.DataAccessLayer
 {
     public interface ILinkDataRepository
     {
-        IEnumerable<LinkData> GetLinks();
+        (IEnumerable<LinkData> Links,int allLinksNumber) GetLinks(string search,int page,int pageSize);
         void Add(LinkData linkData);
+        void Update(LinkData linkData);
         void Remove(string hash);
         string GetLinkFromHash(string hash);
+
     }
 }

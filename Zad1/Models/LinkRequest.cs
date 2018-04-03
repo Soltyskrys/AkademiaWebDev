@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace webdev.Models
 {
-    public class LinkResult
+    public class LinkRequest
     {
-        public string Link { get; set; }
-        public string Hash { get; set; }
+        public string SearchedLink { get; set; }
+        public int Page { get; set; }
     }
 }

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using webdev.DataAccessLayer;
 using webdev.Logic;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.EntityFrameworkCore;
 
 namespace webdev
 {
@@ -23,8 +25,11 @@ namespace webdev
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<ILinkDataRepository, LinkDataRepository>();
+            services.AddTransient<ILinkDataRepository, LinkDataRepository>();
             services.AddTransient<IHashGenerator, HashGenerator>();
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "LinkShare API", Version = "v1" }));
+
+            services.AddDbContext<LinksContext>(options=>options.UseSqlServer(Configuration.GetConnectionString("LinkShareDbConnection")));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -42,6 +47,9 @@ namespace webdev
                     name: "default",
                     template: "{controller=Links}/{action=Index}");
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LinkShare API"));
         }
     }
 }

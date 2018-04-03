@@ -1,42 +1,60 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using webdev.Models;
 
 namespace webdev.DataAccessLayer
 {
     public class LinkDataRepository : ILinkDataRepository
     {
-        List<LinkData> links;
-        private int currentId;
+        private LinksContext Context { get; }
 
-        public LinkDataRepository()
+        public LinkDataRepository(LinksContext context)
         {
-            currentId = 0;
-            links = new List<LinkData>();
-        }
-
-        public void Add(LinkData linkData)
-        {
-            currentId++;
-            linkData.Id = currentId;
-            links.Add(linkData);
-        }
-
-        public string GetLinkFromHash(string hash)
-        {
-            return links.First(x => x.Hash.Equals(hash)).Link;
+            Context = context;
         }
 
         public IEnumerable<LinkData> GetLinks()
         {
-            return links;
+            return Context.LinksData;
+        }
+
+        public void Add(LinkData linkData)
+        {
+            Context.LinksData.Add(linkData);
+            Context.SaveChanges();
+        }
+
+        public void Update(LinkData linkData)
+        {
+            Context.LinksData.Attach(linkData);
+            Context.Entry(linkData).State = EntityState.Modified;
+            Context.SaveChanges();
         }
 
         public void Remove(string hash)
         {
-            links.RemoveAll(x => x.Hash.Equals(hash));
+            var removedLinkData = Context.LinksData.First(x => x.Hash.Equals(hash));
+            Context.LinksData.Remove(removedLinkData);
+            Context.SaveChanges();
+        }
+
+        public string GetLinkFromHash(string hash)
+        {
+            return Context.LinksData.First(x => x.Hash.Equals(hash)).Link;
+        }
+
+        public (IEnumerable<LinkData> Links, int allLinksNumber) GetLinks(string search, int page, int pageSize)
+        {
+            search = search.ToLower();
+            var searchedLinks = Context.LinksData.Where(x => x.Link.ToLower().Contains(search));
+
+            var links = searchedLinks
+                .OrderBy(x=>x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return (Links:links, allLinksNumber: searchedLinks.Count());
         }
     }
 }

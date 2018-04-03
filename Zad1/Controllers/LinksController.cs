@@ -20,26 +20,42 @@ namespace webdev.Controllers
             this.generator = generator;
         }
 
-        public IActionResult Index()
+        [HttpGet("api/links")]
+        public IActionResult GetLinks([FromQuery]LinkRequest request)
         {
-            var viewModel = repository.GetLinks().Select(x => new LinkDataViewModel() { Link = x.Link, Hash = x.Hash });
-            return View(viewModel);
+            var pageSize = 10;
+
+            (IEnumerable<LinkData> links, int linksCount) = repository
+                .GetLinks(request.SearchedLink, request.Page, pageSize);
+
+            var result = links.Select(x => new LinkResult() { Link = x.Link, Hash = x.Hash });
+            int maxPage = CountMaxPage(pageSize, linksCount);
+
+            return Ok(new PageableResult<LinkResult>(result, request.Page, maxPage));
         }
 
-        [HttpPost]
-        public IActionResult Add(AddLinkInput input)
+        private static int CountMaxPage(int pageSize, int linksCount)
+        {
+            var maxPage = (linksCount / pageSize) + 1;
+            if (maxPage > 1 && (linksCount % pageSize == 0)) maxPage--;
+            return maxPage;
+        }
+
+        [HttpPost("api/links")]
+        public IActionResult AddLink(AddLinkInput input)
         {
             var linkData = new LinkData() { Link = input.Link };
             repository.Add(linkData);
             linkData.Hash = generator.Generate(linkData.Id);
-            return RedirectToAction("Index");
+            repository.Update(linkData);
+            return Ok();
         }
 
-        [HttpPost]
-        public IActionResult Remove(RemoveLinkInput input)
+        [HttpDelete("api/links")]
+        public IActionResult RemoveLink(RemoveLinkInput input)
         {
             repository.Remove(input.Hash);
-            return RedirectToAction("Index");
+            return Ok();
         }
 
     }

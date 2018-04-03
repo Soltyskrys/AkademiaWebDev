@@ -16,11 +16,11 @@ namespace webdev.Controllers
             this.repository = repository;
         }
 
-        [Route("/{hash}")]
-        public void RedirectFromHash(string hash)
+        [HttpGet("api/{hash}")]
+        public IActionResult RedirectFromHash(string hash)
         {
             string finalUrl = repository.GetLinkFromHash(hash);
-            Response.Redirect(finalUrl);
+            return Redirect(finalUrl);
         }
     }
 }
