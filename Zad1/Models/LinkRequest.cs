@@ -7,7 +7,7 @@ namespace webdev.Models
 {
     public class LinkRequest
     {
-        public string SearchedLink { get; set; }
+        public string SearchedLink { get; set; } = "";
         public int Page { get; set; }
     }
 }

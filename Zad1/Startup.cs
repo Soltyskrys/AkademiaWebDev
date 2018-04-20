@@ -15,6 +15,8 @@ namespace webdev
 {
     public class Startup
     {
+        private const string Origin = "http://localhost:3000";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,6 +41,7 @@ namespace webdev
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(builder => builder.WithOrigins(Origin).AllowAnyHeader().AllowAnyMethod());
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
