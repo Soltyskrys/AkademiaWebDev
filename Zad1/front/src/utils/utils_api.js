@@ -52,3 +52,5 @@ export class UtilsApi {
     return paramsStringified ? `?${paramsStringified}` : '';
   }
 }
+
+export default UtilsApi

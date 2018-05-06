@@ -41,22 +41,35 @@ namespace webdev.Controllers
             return maxPage;
         }
 
+        [HttpGet("api/links/{hash}")]
+        public IActionResult GetLink(string hash)
+        {
+            string link = repository.GetLinkFromHash(hash);
+            return Ok(new { link });
+        }
+
         [HttpPost("api/links")]
-        public IActionResult AddLink(AddLinkInput input)
+        public IActionResult AddLink([FromBody]AddLinkInput input)
         {
             var linkData = new LinkData() { Link = input.Link };
             repository.Add(linkData);
             linkData.Hash = generator.Generate(linkData.Id);
             repository.Update(linkData);
-            return Ok();
+            return Ok(new { response = "Ok" });
         }
 
         [HttpDelete("api/links")]
         public IActionResult RemoveLink(RemoveLinkInput input)
         {
             repository.Remove(input.Hash);
-            return Ok();
+            return Ok(new { response = "Ok" });
         }
 
+        [HttpPut("api/links")]
+        public IActionResult ChangeLink([FromBody]ChangeLinkInput input)
+        {
+            repository.UpdateLinkAssignedToHash(input.Hash, input.Link);
+            return Ok(new { response = "OK" });
+        }
     }
 }

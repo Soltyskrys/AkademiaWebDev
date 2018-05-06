@@ -56,5 +56,12 @@ namespace webdev.DataAccessLayer
 
             return (Links:links, allLinksNumber: searchedLinks.Count());
         }
+
+        public void UpdateLinkAssignedToHash(string hash,string link)
+        {
+            var updatedLink = Context.LinksData.First(x => x.Hash == hash);
+            updatedLink.Link = link;
+            Context.SaveChanges();
+        }
     }
 }

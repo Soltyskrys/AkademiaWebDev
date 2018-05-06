@@ -13,6 +13,6 @@ namespace webdev.DataAccessLayer
         void Update(LinkData linkData);
         void Remove(string hash);
         string GetLinkFromHash(string hash);
-
+        void UpdateLinkAssignedToHash(string hash, string link);
     }
 }
